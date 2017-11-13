@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProteinHMM {
     public static double[] initialProb = new double[]{
@@ -103,24 +105,86 @@ public class ProteinHMM {
         return stateSequence.reverse().toString();
     }
 
+    public static int[] add(int[] first, int[] second) {
+        int length = first.length < second.length ? first.length : second.length;
+        int[] result = new int[length];
+        for (int i = 0; i < length; i++) {
+            result[i] = first[i] + second[i]; 
+        } 
+        return result; 
+    }
+
+    public static int[] countFragments(String stateSeq){
+        int phobic = stateSeq.split("O", -1).length-1;
+        int philic = stateSeq.split("I", -1).length-1;
+        int mixed = stateSeq.split("M", -1).length-1;
+        return new int[] {phobic, philic, mixed};
+    }
+
+    public static Map countLengths(ArrayList<String> annotations, char region){
+        Map<Integer, Integer> dist = new HashMap<Integer, Integer>();
+        //[hydrophobic, hydrophilic, mixed]
+
+        for (int i = 0; i < annotations.size(); i++){
+            String s = annotations.get(i);
+            int length = 0;
+            for (int c = 0; c < s.length(); c++){
+                if (s.charAt(c) == region){
+                    length++;
+                }
+                else{
+                    if (length != 0){
+                        if (dist.containsKey(length)){
+                            dist.put(length, dist.get(length) + 1);
+                        }
+                        else{
+                            dist.put(length, 1);
+                        }
+                        length = 0;
+                    }
+                }
+            }
+        }
+        return dist;
+    }
+
+    public static Map countFrequency(String sequence){
+        Map<Character, Integer> frequencies = new HashMap<Character, Integer>();
+
+        for (int i = 0; i < sequence.length(); i++){
+            char c = sequence.charAt(i);
+            if (frequencies.containsKey(c)){
+                frequencies.put(c, frequencies.get(c) + 1);
+            }
+            else{
+                frequencies.put(c, 1);
+            }
+        }
+
+        return frequencies;
+    }
+
     public static void main(String args[]) throws IOException {
         System.out.println("O - Hydrophobic region");
         System.out.println("I - Hydrophilic region");
         System.out.println("M - Mixed region");
 
         BufferedReader in = new BufferedReader(new FileReader("hw3_proteins.fa"));
+        ArrayList<String> stateSequences = new ArrayList<String>();
+        ArrayList<String> proteinSequences = new ArrayList<String>();
 
         String line;
         StringBuilder proteinSeq = new StringBuilder();
-        int i = 0; 
         Boolean newProtein = false;
         while ((line=in.readLine()) != null){
             if (line.startsWith(">")){
-                System.out.println(line);
+                // System.out.println(line);
 
                 if (newProtein){
                     String stateSeq = getStateSeq(proteinSeq.toString());
-                    System.out.println(stateSeq);
+                    // System.out.println(stateSeq);
+                    stateSequences.add(stateSeq);
+                    proteinSequences.add(proteinSeq.toString());
                     // System.out.println(proteinSeq);
                     newProtein = false;
                     proteinSeq = new StringBuilder();
@@ -133,7 +197,47 @@ public class ProteinHMM {
         }
         // To account for the last one in file.
         String stateSeq = getStateSeq(proteinSeq.toString());
-        System.out.println(stateSeq);
+        stateSequences.add(stateSeq);
+        proteinSequences.add(proteinSeq.toString());
+
+
+        // Map oDist = countLengths(stateSequences, 'O');
+        // Map iDist = countLengths(stateSequences, 'I');
+        // Map mDist = countLengths(stateSequences, 'M');
+
+        StringBuilder oAminoAcids = new StringBuilder();
+        StringBuilder iAminoAcids = new StringBuilder();
+        StringBuilder mAminoAcids = new StringBuilder();
+
+        for (int i = 0; i < proteinSequences.size(); i++){
+            String sSeq = stateSequences.get(i);
+            String pSeq = proteinSequences.get(i);
+            for (int j = 0; j < sSeq.length(); j++){
+                if (sSeq.charAt(j) == 'O'){
+                    oAminoAcids.append(pSeq.charAt(j));
+                }
+                else if (sSeq.charAt(j) == 'I'){
+                    iAminoAcids.append(pSeq.charAt(j));
+                }
+                else if (sSeq.charAt(j) == 'M'){
+                    mAminoAcids.append(pSeq.charAt(j));
+                }
+            }
+
+        }
+
+        Map oFrequencies = countFrequency(oAminoAcids.toString());
+        Map iFrequencies = countFrequency(iAminoAcids.toString());
+        Map mFrequencies = countFrequency(mAminoAcids.toString());
+
+        System.out.println(oAminoAcids.length());
+        System.out.println(oFrequencies);
+
+        System.out.println(iAminoAcids.length());
+        System.out.println(iFrequencies);
+
+        System.out.println(mAminoAcids.length());
+        System.out.println(mFrequencies);
 
     }
 }
