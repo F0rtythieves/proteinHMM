@@ -91,14 +91,14 @@ public class MotifDiscovery {
         StringBuilder cSequence = new StringBuilder("      ");
         ArrayList<String> consensusSequences = new ArrayList<String>();
 
-        int[] pos = new int[consensusLength];
-        int totalSequences = (int) Math.pow(consensusLength, alphabet.length);
+        int[] pos = new int[alphabet.length];
+        int totalSequences = (int) Math.pow(alphabet.length, consensusLength);
 
         for (int i =0; i < totalSequences; i++){
             for (int j = 0; j < consensusLength; j++){
-                if (pos[j] == alphabet.length){
+                if (pos[j] == consensusLength){
                     pos[j] = 0;
-                    if (j + 1 < consensusLength){
+                    if (j + 1 < alphabet.length){
                         pos[j+1]++;
                     }
                 }
@@ -107,6 +107,25 @@ public class MotifDiscovery {
             pos[0]++;
             consensusSequences.add(cSequence.toString());
         }
+
+        // System.out.println(consensusSequences);
+
+        // int[] pos = new int[consensusLength];
+        // int totalSequences = (int) Math.pow(consensusLength, alphabet.length);
+
+        // for (int i =0; i < totalSequences; i++){
+        //     for (int j = 0; j < consensusLength; j++){
+        //         if (pos[j] == alphabet.length){
+        //             pos[j] = 0;
+        //             if (j + 1 < consensusLength){
+        //                 pos[j+1]++;
+        //             }
+        //         }
+        //         cSequence.setCharAt(j, alphabet[pos[j]]);
+        //     }
+        //     pos[0]++;
+        //     consensusSequences.add(cSequence.toString());
+        // }
 
         double bestZscore = -1000000000.0;
         String bestConsensus = "";
