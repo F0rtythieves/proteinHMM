@@ -178,11 +178,11 @@ public class ProteinHMM {
         Boolean newProtein = false;
         while ((line=in.readLine()) != null){
             if (line.startsWith(">")){
-                // System.out.println(line);
+                System.out.println(line);
 
                 if (newProtein){
                     String stateSeq = getStateSeq(proteinSeq.toString());
-                    // System.out.println(stateSeq);
+                    System.out.println(stateSeq);
                     stateSequences.add(stateSeq);
                     proteinSequences.add(proteinSeq.toString());
                     // System.out.println(proteinSeq);
@@ -199,6 +199,8 @@ public class ProteinHMM {
         String stateSeq = getStateSeq(proteinSeq.toString());
         stateSequences.add(stateSeq);
         proteinSequences.add(proteinSeq.toString());
+
+        // System.out.println(stateSequences);
 
 
         // Map oDist = countLengths(stateSequences, 'O');

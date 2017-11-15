@@ -91,6 +91,8 @@ public class MotifDiscovery {
         StringBuilder cSequence = new StringBuilder("      ");
         ArrayList<String> consensusSequences = new ArrayList<String>();
 
+        System.out.println("Generating all consensus sequences...");
+
         int[] pos = new int[alphabet.length];
         int totalSequences = (int) Math.pow(alphabet.length, consensusLength);
 
@@ -127,6 +129,8 @@ public class MotifDiscovery {
         //     consensusSequences.add(cSequence.toString());
         // }
 
+        System.out.println("Finding best consensus sequence...");
+
         double bestZscore = -1000000000.0;
         String bestConsensus = "";
         for (int i = 0; i < consensusSequences.size(); i++){
@@ -151,7 +155,7 @@ public class MotifDiscovery {
             }
             
         }
-
+        System.out.println("Done.");
 
         // System.out.println(consensusSequences.size());
 
